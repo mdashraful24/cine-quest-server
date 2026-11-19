@@ -3,6 +3,7 @@ import config from "./app/config";
 import logger from "./app/logger";
 import { prisma } from "./app/lib/prisma";
 import { isCloudinaryConfigured } from "./app/lib/cloudinary";
+import { seedDatabase } from "../prisma/seed/seed";
 
 const PORT = Number(config.port);
 const NODE_ENV = config.node_env;
@@ -11,6 +12,10 @@ const main = async () => {
 	try {
 		await prisma.$connect();
 		logger.info("Connected to the database successfully.");
+
+		if (config.seed_on_start) {
+			await seedDatabase();
+		}
 
 		if (isCloudinaryConfigured) {
 			logger.info("Cloudinary image uploads are configured.");

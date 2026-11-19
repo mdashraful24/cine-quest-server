@@ -5,6 +5,7 @@ import { deleteCloudinaryImage, uploadImage } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import {
+	CIRCULAR_DEPENDENCY_MESSAGE,
 	buildAdjacency,
 	getRewatchOrder as buildRewatchOrder,
 	wouldCreateCycle,
@@ -198,33 +199,43 @@ const updateMovie = async (
 			);
 		}
 
-		await prisma.movie.update({
-			where: { id },
-			data: {
-				...(payload.title !== undefined ? { title: payload.title } : {}),
-				...(payload.releaseYear !== undefined
-					? { releaseYear: payload.releaseYear }
-					: {}),
-				...(payload.runtimeMinutes !== undefined
-					? { runtimeMinutes: payload.runtimeMinutes }
-					: {}),
-				...(payload.watched !== undefined ? { watched: payload.watched } : {}),
-				...(image ?? {}),
-			},
-		});
+		const operations: Prisma.PrismaPromise<unknown>[] = [
+			prisma.movie.update({
+				where: { id },
+				data: {
+					...(payload.title !== undefined ? { title: payload.title } : {}),
+					...(payload.releaseYear !== undefined
+						? { releaseYear: payload.releaseYear }
+						: {}),
+					...(payload.runtimeMinutes !== undefined
+						? { runtimeMinutes: payload.runtimeMinutes }
+						: {}),
+					...(payload.watched !== undefined
+						? { watched: payload.watched }
+						: {}),
+					...(image ?? {}),
+				},
+			}),
+		];
 
 		if (nextPrerequisiteIds !== undefined) {
-			await prisma.moviePrerequisite.deleteMany({ where: { movieId: id } });
+			operations.push(
+				prisma.moviePrerequisite.deleteMany({ where: { movieId: id } }),
+			);
 
 			if (nextPrerequisiteIds.length > 0) {
-				await prisma.moviePrerequisite.createMany({
-					data: nextPrerequisiteIds.map((prerequisiteId) => ({
-						movieId: id,
-						prerequisiteId,
-					})),
-				});
+				operations.push(
+					prisma.moviePrerequisite.createMany({
+						data: nextPrerequisiteIds.map((prerequisiteId) => ({
+							movieId: id,
+							prerequisiteId,
+						})),
+					}),
+				);
 			}
 		}
+
+		await prisma.$transaction(operations);
 
 		if (image) {
 			await deleteCloudinaryImage(existing.imagePublicId);
@@ -289,7 +300,26 @@ const getRewatchOrder = async (id: string) => {
 	]);
 
 	const movieById = new Map(movies.map((movie) => [movie.id, movie]));
-	const ordered = buildRewatchOrder(id, edges)
+	let orderedIds: string[];
+
+	try {
+		orderedIds = buildRewatchOrder(id, edges);
+	} catch (error) {
+		if (
+			error instanceof Error &&
+			error.message === CIRCULAR_DEPENDENCY_MESSAGE
+		) {
+			throw new AppError(
+				httpStatus.CONFLICT,
+				"These prerequisites would create a circular dependency.",
+				"CIRCULAR_DEPENDENCY",
+			);
+		}
+
+		throw error;
+	}
+
+	const ordered = orderedIds
 		.filter((movieId) => movieId !== id)
 		.map((movieId) => movieById.get(movieId))
 		.filter((movie): movie is NonNullable<typeof movie> => Boolean(movie));

@@ -51,7 +51,11 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  ""
+                  "const data = pm.response.json().data;",
+                  "if (data?.id) {",
+                  "    pm.collectionVariables.set('movieId', data.id);",
+                  "    pm.collectionVariables.set('createdMovieId', data.id);",
+                  "}"
                 ]
               }
             }
@@ -117,7 +121,17 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  ""
+                  "const movies = pm.response.json().data;",
+                  "const find = (title) => movies.find((movie) => movie.title === title);",
+                  "const ironMan = find('Iron Man');",
+                  "const civilWar = find('Captain America: Civil War');",
+                  "const endgame = find('Avengers: Endgame');",
+                  "if (ironMan) {",
+                  "    pm.collectionVariables.set('prerequisiteMovieId', ironMan.id);",
+                  "    pm.collectionVariables.set('cycleMovieId', ironMan.id);",
+                  "}",
+                  "if (civilWar) pm.collectionVariables.set('targetMovieId', civilWar.id);",
+                  "if (endgame) pm.collectionVariables.set('cyclePrerequisiteId', endgame.id);"
                 ]
               }
             }
@@ -248,7 +262,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"prerequisiteIds\": [\"{{prerequisiteMovieId}}\"]\n}",
+              "raw": "{\n  \"prerequisiteIds\": [\"{{cyclePrerequisiteId}}\"]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -256,13 +270,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}{{apiPrefix}}/movies/{{movieId}}",
+              "raw": "{{baseUrl}}{{apiPrefix}}/movies/{{cycleMovieId}}",
               "host": [
                 "{{baseUrl}}{{apiPrefix}}"
               ],
               "path": [
                 "movies",
-                "{{movieId}}"
+                "{{cycleMovieId}}"
               ]
             }
           },
@@ -316,7 +330,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  ""
+                  "const data = pm.response.json().data;",
+                  "if (data?.id) pm.collectionVariables.set('createdCinemaId', data.id);"
                 ]
               }
             }
@@ -342,6 +357,7 @@
                   "key": "image",
                   "type": "file",
                   "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
+                  "disabled": true,
                   "src": [
                     "/C:/Users/USER/Pictures/docker-learning-roadmap-poster.png"
                   ]
@@ -368,7 +384,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  ""
+                  "const cinemas = pm.response.json().data;",
+                  "const find = (name) => cinemas.find((cinema) => cinema.name === name);",
+                  "const imax = find('IMAX Central');",
+                  "const cineplex = find('Cineplex Downtown');",
+                  "const premiere = find('Premiere House');",
+                  "if (imax) pm.collectionVariables.set('cinemaId', imax.id);",
+                  "if (cineplex) pm.collectionVariables.set('bundleCinemaId', cineplex.id);",
+                  "if (premiere) pm.collectionVariables.set('premiereCinemaId', premiere.id);"
                 ]
               }
             }
@@ -744,6 +767,14 @@
     },
     {
       "key": "bookingId",
+      "value": ""
+    },
+    {
+      "key": "cycleMovieId",
+      "value": ""
+    },
+    {
+      "key": "cyclePrerequisiteId",
       "value": ""
     }
   ]

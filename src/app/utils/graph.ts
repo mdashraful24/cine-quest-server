@@ -1,3 +1,5 @@
+export const CIRCULAR_DEPENDENCY_MESSAGE = "Circular dependency detected.";
+
 export type PrerequisiteEdge = {
 	movieId: string;
 	prerequisiteId: string;
@@ -63,7 +65,11 @@ export const getRewatchOrder = (
 	const visiting = new Set<string>();
 
 	const visit = (movieId: string) => {
-		if (visited.has(movieId) || visiting.has(movieId)) return;
+		if (visited.has(movieId)) return;
+
+		if (visiting.has(movieId)) {
+			throw new Error(CIRCULAR_DEPENDENCY_MESSAGE);
+		}
 
 		visiting.add(movieId);
 

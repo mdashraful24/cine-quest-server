@@ -27,12 +27,12 @@ services:
       API_PREFIX: /api
       DATABASE_URL: postgresql://cinequest:cinequest@db:5432/cinequest
       FRONTEND_URL: http://localhost:3000
-      SEED_ON_START: "false"
+      SEED_ON_START: "true"
       TRUST_PROXY: "1"
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "bunx prisma migrate deploy && bun run db:seed && bun src/server.ts"
+    command: sh -c "bunx prisma migrate deploy && bun src/server.ts"
 
 volumes:
   cinequest-db:

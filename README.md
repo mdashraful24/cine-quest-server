@@ -13,7 +13,7 @@ This repository contains the backend API. The core feature logic is hand-written
 - Rewatch order with each prerequisite exactly once, topological ordering, target excluded, watched count, and unwatched runtime.
 - Cinemas with unique name and 1–10 unique bundle sizes from 1–500 seats.
 - Booking quotes for group sizes 1–10000 using the fewest exact bundles, or an explicit impossible result.
-- Persistent bookings with confirm, cancel, and delete operations.
+- Persistent bookings created as confirmed, with cancel and delete operations.
 - Cinema deletion with dependent bookings removed by database cascade.
 - All required endpoints under `/api`.
 
@@ -54,11 +54,15 @@ The demo seed adds 8 movies with prerequisite links and 3 cinemas with bundle si
 
 ## Docker Compose
 
+From the workspace root containing both `cine-quest-client` and `cine-quest-server`:
+
 ```bash
 docker compose up --build
 ```
 
-This starts PostgreSQL and the API, applies migrations, seeds demo data, and serves the API at `http://localhost:5000/api`.
+This starts PostgreSQL, the API, and the client. The API applies migrations, seeds demo data, and serves at `http://localhost:5000/api`; the client serves at `http://localhost:3000`.
+
+The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and the API only.
 
 ## Useful Commands
 

@@ -50,5 +50,5 @@ const getBookingQuote = catchAsync(async (req, res) => {
 export const CinemaController = {
 	createCinema,
 	cinemaList,
-	getBookingQuote
+	getBookingQuote,
 };

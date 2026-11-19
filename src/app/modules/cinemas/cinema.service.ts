@@ -106,5 +106,5 @@ const getBookingQuote = async (id: string, groupSize: number) => {
 export const CinemaService = {
 	createCinema,
 	cinemaList,
-	getBookingQuote
+	getBookingQuote,
 };

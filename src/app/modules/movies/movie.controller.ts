@@ -49,6 +49,17 @@ const updateMovie = catchAsync(async (req, res) => {
 	});
 });
 
+const deleteMovie = catchAsync(async (req, res) => {
+	const result = await MovieService.deleteMovie(String(req.params.id));
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Movie deleted successfully.",
+		data: result,
+	});
+});
+
 const getRewatchOrder = catchAsync(async (req, res) => {
 	const result = await MovieService.getRewatchOrder(String(req.params.id));
 
@@ -64,5 +75,6 @@ export const MovieController = {
 	createMovie,
 	movieList,
 	updateMovie,
-	getRewatchOrder
+	deleteMovie,
+	getRewatchOrder,
 };

@@ -22,6 +22,7 @@ This repository contains the backend API. The core feature logic is hand-written
 | POST | `/api/movies` | Create a movie |
 | GET | `/api/movies` | List movies |
 | PATCH | `/api/movies/:id` | Update watched state, prerequisites, and other movie fields |
+| DELETE | `/api/movies/:id` | Delete a movie and clean up prerequisite links |
 | GET | `/api/movies/:id/rewatch-order` | Get ordered prerequisites with progress summary |
 | POST | `/api/cinemas` | Create a cinema |
 | GET | `/api/cinemas` | List cinemas |

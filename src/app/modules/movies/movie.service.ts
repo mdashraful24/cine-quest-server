@@ -242,6 +242,28 @@ const updateMovie = async (
 	}
 };
 
+const deleteMovie = async (id: string) => {
+	const movie = await prisma.movie.findUnique({
+		where: { id },
+		select: { id: true, imagePublicId: true },
+	});
+
+	if (!movie) {
+		throw new AppError(httpStatus.NOT_FOUND, "Movie not found.", "NOT_FOUND");
+	}
+
+	await prisma.moviePrerequisite.deleteMany({
+		where: {
+			OR: [{ movieId: id }, { prerequisiteId: id }],
+		},
+	});
+
+	await prisma.movie.delete({ where: { id } });
+	await deleteCloudinaryImage(movie.imagePublicId);
+
+	return { id };
+};
+
 const getRewatchOrder = async (id: string) => {
 	const target = await prisma.movie.findUnique({
 		where: { id },
@@ -287,5 +309,6 @@ export const MovieService = {
 	createMovie,
 	movieList,
 	updateMovie,
-	getRewatchOrder
+	deleteMovie,
+	getRewatchOrder,
 };

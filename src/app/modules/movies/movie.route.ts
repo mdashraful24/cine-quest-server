@@ -20,5 +20,6 @@ router.patch(
 	validateRequest(updateMovieSchema),
 	MovieController.updateMovie,
 );
+router.delete("/:id", MovieController.deleteMovie);
 
 export const MovieRoutes = router;

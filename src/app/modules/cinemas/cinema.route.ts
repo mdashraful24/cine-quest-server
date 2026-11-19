@@ -2,7 +2,7 @@ import { Router } from "express";
 import { upload } from "../../lib/multer";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { CinemaController } from "./cinema.controller";
-import { createCinemaSchema } from "./cinema.validation";
+import { createBookingSchema, createCinemaSchema } from "./cinema.validation";
 
 const router = Router();
 
@@ -14,5 +14,11 @@ router.post(
 );
 router.get("/", CinemaController.cinemaList);
 router.get("/:id/booking", CinemaController.getBookingQuote);
+router.post(
+	"/:id/booking",
+	validateRequest(createBookingSchema),
+	CinemaController.createBooking,
+);
+router.delete("/:id", CinemaController.deleteCinema);
 
 export const CinemaRoutes = router;

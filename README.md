@@ -13,6 +13,8 @@ This repository contains the backend API. The core feature logic is hand-written
 - Rewatch order with each prerequisite exactly once, topological ordering, target excluded, watched count, and unwatched runtime.
 - Cinemas with unique name and 1–10 unique bundle sizes from 1–500 seats.
 - Booking quotes for group sizes 1–10000 using the fewest exact bundles, or an explicit impossible result.
+- Persistent bookings with confirm, cancel, and delete operations.
+- Cinema deletion with dependent bookings removed by database cascade.
 - All required endpoints under `/api`.
 
 ## API Reference
@@ -26,7 +28,12 @@ This repository contains the backend API. The core feature logic is hand-written
 | GET | `/api/movies/:id/rewatch-order` | Get ordered prerequisites with progress summary |
 | POST | `/api/cinemas` | Create a cinema |
 | GET | `/api/cinemas` | List cinemas |
+| DELETE | `/api/cinemas/:id` | Delete a cinema and its bookings |
 | GET | `/api/cinemas/:id/booking?groupSize=6` | Get a booking quote |
+| POST | `/api/cinemas/:id/booking` | Confirm and persist a booking |
+| GET | `/api/bookings` | List bookings |
+| PATCH | `/api/bookings/:id/cancel` | Cancel a booking |
+| DELETE | `/api/bookings/:id` | Delete a booking |
 
 `GET /health` is available for health checks.
 
@@ -71,8 +78,10 @@ bun run db:studio
 - Movie titles and cinema names are limited to 200 characters.
 - IDs are UUID strings. Prerequisite IDs may be sent as a JSON array or a comma-separated string.
 - `watched` defaults to `false`; it may be set on create or changed with `PATCH /movies/:id`.
-- An impossible booking is a successful request with `possible: false` and a clear message.
-- Error responses include `code` and `statusCode` so clients can handle `CIRCULAR_DEPENDENCY` reliably.
+- An impossible booking quote is a successful request with `possible: false` and a clear message.
+- Confirming an impossible booking returns `409 BOOKING_NOT_POSSIBLE`; the quote remains the UI check for “not possible”.
+- Booking bundles are stored as an exact snapshot; cancelled bookings stay in the list until deleted.
+- Error responses include `code` and `statusCode` so clients can handle `CIRCULAR_DEPENDENCY` and `BOOKING_NOT_POSSIBLE` reliably.
 - Removed or changed prerequisites are validated before any write. Direct concurrent updates are not serialized by a database-level cycle constraint.
 
 ## AI Usage
@@ -86,6 +95,7 @@ erDiagram
   MOVIES ||--o{ MOVIE_PREREQUISITES : "movie"
   MOVIES ||--o{ MOVIE_PREREQUISITES : "prerequisite"
   CINEMAS ||--o{ CINEMA_BUNDLE_SIZES : "sells"
+  CINEMAS ||--o{ BOOKINGS : "receives"
 
   MOVIES {
     string id PK
@@ -116,5 +126,16 @@ erDiagram
   CINEMA_BUNDLE_SIZES {
     string cinemaId PK, FK
     int seatCount PK
+  }
+
+  BOOKINGS {
+    string id PK
+    string cinemaId FK
+    int groupSize
+    int totalBundles
+    json bundles
+    string status
+    datetime createdAt
+    datetime updatedAt
   }
 ```

@@ -25,13 +25,17 @@ const bundleSizesSchema = z.preprocess(
 		}),
 );
 
-const bookingQuerySchema = z.object({
-	groupSize: z.coerce
-		.number()
-		.int()
-		.min(1, "Group size must be at least 1.")
-		.max(10000, "Group size must be at most 10,000."),
-});
+const groupSizeSchema = z.coerce
+	.number()
+	.int()
+	.min(1, "Group size must be at least 1.")
+	.max(10000, "Group size must be at most 10,000.");
+
+const bookingQuerySchema = z.object({ groupSize: groupSizeSchema });
+
+export const createBookingSchema = z
+	.object({ groupSize: groupSizeSchema })
+	.strict();
 
 export const createCinemaSchema = z
 	.object({

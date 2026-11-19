@@ -1,7 +1,10 @@
 import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import type { TCreateCinemaPayload } from "./cinema.interface";
+import type {
+	TCreateBookingPayload,
+	TCreateCinemaPayload,
+} from "./cinema.interface";
 import { CinemaService } from "./cinema.service";
 import { parseBookingQuery } from "./cinema.validation";
 
@@ -47,8 +50,34 @@ const getBookingQuote = catchAsync(async (req, res) => {
 	});
 });
 
+const createBooking = catchAsync(async (req, res) => {
+	const booking = await CinemaService.createBooking(String(req.params.id), {
+		groupSize: (req.body as TCreateBookingPayload).groupSize,
+	});
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Booking created successfully.",
+		data: booking,
+	});
+});
+
+const deleteCinema = catchAsync(async (req, res) => {
+	const cinema = await CinemaService.deleteCinema(String(req.params.id));
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Cinema deleted successfully.",
+		data: cinema,
+	});
+});
+
 export const CinemaController = {
 	createCinema,
 	cinemaList,
 	getBookingQuote,
+	createBooking,
+	deleteCinema,
 };

@@ -10,6 +10,7 @@ model Cinema {
   updatedAt DateTime @updatedAt
 
   bundleSizes CinemaBundleSize[]
+  bookings    Booking[]
 
   @@map("cinemas")
 }

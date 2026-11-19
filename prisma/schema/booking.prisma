@@ -1,0 +1,18 @@
+model Booking {
+  id String @id @default(uuid())
+
+  cinemaId String
+  cinema   Cinema @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+
+  groupSize    Int
+  totalBundles Int
+  bundles      Json
+  status       String @default("CONFIRMED")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cinemaId])
+  @@index([status])
+  @@map("bookings")
+}

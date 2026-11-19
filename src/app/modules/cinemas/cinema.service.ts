@@ -3,7 +3,11 @@ import { deleteCloudinaryImage, uploadImage } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import { calculateBookingQuote } from "../../utils/bundle";
-import type { TCreateCinemaPayload } from "./cinema.interface";
+import { toBookingResponse } from "../bookings/booking.service";
+import type {
+	TCreateBookingPayload,
+	TCreateCinemaPayload,
+} from "./cinema.interface";
 
 const cinemaSelect = {
 	id: true,
@@ -103,8 +107,60 @@ const getBookingQuote = async (id: string, groupSize: number) => {
 	};
 };
 
+const createBooking = async (id: string, payload: TCreateBookingPayload) => {
+	const quote = await getBookingQuote(id, payload.groupSize);
+
+	if (!quote.possible) {
+		throw new AppError(
+			httpStatus.CONFLICT,
+			quote.message ?? "No exact bundle combination is possible.",
+			"BOOKING_NOT_POSSIBLE",
+		);
+	}
+
+	const booking = await prisma.booking.create({
+		data: {
+			cinemaId: quote.cinemaId,
+			groupSize: quote.groupSize,
+			totalBundles: quote.totalBundles,
+			bundles: quote.bundles,
+		},
+		select: {
+			id: true,
+			cinemaId: true,
+			groupSize: true,
+			totalBundles: true,
+			bundles: true,
+			status: true,
+			createdAt: true,
+			updatedAt: true,
+			cinema: { select: { name: true } },
+		},
+	});
+
+	return toBookingResponse(booking);
+};
+
+const deleteCinema = async (id: string) => {
+	const cinema = await prisma.cinema.findUnique({
+		where: { id },
+		select: { id: true, imagePublicId: true },
+	});
+
+	if (!cinema) {
+		throw new AppError(httpStatus.NOT_FOUND, "Cinema not found.", "NOT_FOUND");
+	}
+
+	await prisma.cinema.delete({ where: { id } });
+	await deleteCloudinaryImage(cinema.imagePublicId);
+
+	return { id };
+};
+
 export const CinemaService = {
 	createCinema,
 	cinemaList,
 	getBookingQuote,
+	createBooking,
+	deleteCinema,
 };

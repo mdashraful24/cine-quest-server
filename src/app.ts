@@ -5,6 +5,7 @@ import helmet from "helmet";
 import httpStatus from "http-status";
 import config from "./app/config";
 import { apiLimiter } from "./app/middlewares/rateLimit";
+import { BookingRoutes } from "./app/modules/bookings/booking.route";
 import { CinemaRoutes } from "./app/modules/cinemas/cinema.route";
 import { MovieRoutes } from "./app/modules/movies/movie.route";
 import { notFound } from "./app/middlewares/notFound";
@@ -54,6 +55,7 @@ app.get("/health", (_req, res) => {
 app.use(apiLimiter);
 app.use(`${apiPrefix}/movies`, MovieRoutes);
 app.use(`${apiPrefix}/cinemas`, CinemaRoutes);
+app.use(`${apiPrefix}/bookings`, BookingRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

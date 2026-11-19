@@ -1,21 +1,10 @@
 import "dotenv/config";
-
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../../../generated/prisma/client";
 
-type PrismaClientLike = {
-	$connect: () => Promise<void>;
-	$disconnect: () => Promise<void>;
-};
-
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-	throw new Error("DATABASE_URL is not configured.");
-}
+const connectionString = `${process.env.DATABASE_URL}`;
 
 const adapter = new PrismaPg({ connectionString });
-const clientModule = (await import("@prisma/client")) as unknown as {
-	PrismaClient: new (options: { adapter: PrismaPg }) => PrismaClientLike;
-};
+const prisma = new PrismaClient({ adapter });
 
-export const prisma = new clientModule.PrismaClient({ adapter });
+export { prisma };

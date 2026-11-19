@@ -2,16 +2,28 @@ import app from "./app";
 import config from "./app/config";
 import logger from "./app/logger";
 import { prisma } from "./app/lib/prisma";
+import { isCloudinaryConfigured } from "./app/lib/cloudinary";
 
 const PORT = Number(config.port);
+const NODE_ENV = config.node_env;
 
 const main = async () => {
 	try {
 		await prisma.$connect();
 		logger.info("Connected to the database successfully.");
 
+		if (isCloudinaryConfigured) {
+			logger.info("Cloudinary image uploads are configured.");
+		} else {
+			logger.warn(
+				"Cloudinary image uploads are disabled (missing CLOUDINARY_* environment variables).",
+			);
+		}
+
 		const server = app.listen(PORT, () => {
-			logger.info(`Server is running on port ${PORT}`);
+			logger.info(
+				`Server is running on port http://localhost:${PORT} (${NODE_ENV})`,
+			);
 		});
 
 		let shuttingDown = false;

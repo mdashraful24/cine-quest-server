@@ -1,0 +1,22 @@
+model Cinema {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bundleSizes CinemaBundleSize[]
+
+  @@map("cinemas")
+}
+
+model CinemaBundleSize {
+  cinemaId  String
+  seatCount Int
+
+  cinema Cinema @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+
+  @@id([cinemaId, seatCount])
+  @@map("cinema_bundle_sizes")
+}

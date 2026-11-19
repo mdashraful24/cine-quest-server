@@ -1,1 +1,549 @@
-{}
+{
+  "info": {
+    "_postman_id": "54f2837e-ec9c-4241-9e4f-d81284f6c1de",
+    "name": "CineQuest",
+    "description": "CineQuest API test collection. Run `bun run db:seed` first so list requests can capture seeded IDs. Image-capable endpoints use form-data with a disabled `image` file row; enable it and choose a file to test upload. Other bodies use raw JSON.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59636503"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Movies",
+      "item": [
+        {
+          "name": "Create Movie (form-data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Guardians of the Galaxy {{$randomInt}}",
+                  "type": "text"
+                },
+                {
+                  "key": "releaseYear",
+                  "value": "2014",
+                  "type": "text"
+                },
+                {
+                  "key": "runtimeMinutes",
+                  "value": "122",
+                  "type": "text"
+                },
+                {
+                  "key": "watched",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "prerequisiteIds",
+                  "value": "{{movieId}}",
+                  "type": "text",
+                  "description": "Comma-separated movie IDs. Empty value is valid for no prerequisites."
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/movies",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "movies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Movies (sets IDs)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/movies",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "movies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Rewatch Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/movies/{{targetMovieId}}/rewatch-order",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "movies",
+                "{{targetMovieId}}",
+                "rewatch-order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Movie (form-data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Movie updated with 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Watched state updated', () => {",
+                  "    pm.expect(pm.response.json().data.watched).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "watched",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
+                  "value": null,
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/movies/{{movieId}}",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Circular Dependency Test (raw JSON)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cycle rejected with 409', () => {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "",
+                  "pm.test('Error code is CIRCULAR_DEPENDENCY', () => {",
+                  "    pm.expect(pm.response.json().code).to.eql('CIRCULAR_DEPENDENCY');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prerequisiteIds\": [\"{{prerequisiteMovieId}}\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/movies/{{movieId}}",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cinemas",
+      "item": [
+        {
+          "name": "Create Cinema (form-data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Test Cinema {{$randomInt}}",
+                  "type": "text"
+                },
+                {
+                  "key": "bundleSizes",
+                  "value": "4,6",
+                  "type": "text",
+                  "description": "Comma-separated bundle sizes between 1 and 500."
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
+                  "src": [
+                    "/C:/Users/USER/Pictures/docker-learning-roadmap-poster.png"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Cinemas (sets IDs)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Quote - IMAX Central",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas/{{cinemaId}}/booking?groupSize=6",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas",
+                "{{cinemaId}}",
+                "booking"
+              ],
+              "query": [
+                {
+                  "key": "groupSize",
+                  "value": "6"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Quote - Cineplex Downtown",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas/{{bundleCinemaId}}/booking?groupSize=11",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas",
+                "{{bundleCinemaId}}",
+                "booking"
+              ],
+              "query": [
+                {
+                  "key": "groupSize",
+                  "value": "11"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Quote - Premiere House",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas/{{premiereCinemaId}}/booking?groupSize=44",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas",
+                "{{premiereCinemaId}}",
+                "booking"
+              ],
+              "query": [
+                {
+                  "key": "groupSize",
+                  "value": "44"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Quote - Impossible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas/{{createdCinemaId}}/booking?groupSize=7",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas",
+                "{{createdCinemaId}}",
+                "booking"
+              ],
+              "query": [
+                {
+                  "key": "groupSize",
+                  "value": "7"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "apiPrefix",
+      "value": "/api"
+    },
+    {
+      "key": "movieId",
+      "value": ""
+    },
+    {
+      "key": "targetMovieId",
+      "value": ""
+    },
+    {
+      "key": "prerequisiteMovieId",
+      "value": ""
+    },
+    {
+      "key": "civilWarMovieId",
+      "value": ""
+    },
+    {
+      "key": "createdMovieId",
+      "value": ""
+    },
+    {
+      "key": "cinemaId",
+      "value": ""
+    },
+    {
+      "key": "bundleCinemaId",
+      "value": ""
+    },
+    {
+      "key": "premiereCinemaId",
+      "value": ""
+    },
+    {
+      "key": "createdCinemaId",
+      "value": ""
+    }
+  ]
+}

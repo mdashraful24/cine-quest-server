@@ -2,7 +2,7 @@
 	"name": "cine-quest-server",
 	"version": "1.0.0",
 	"description": "Backend API for CineQuest",
-	"main": "index.js",
+	"main": "dist/server.js",
 	"scripts": {
 		"dev": "bun --watch src/server.ts",
 		"build": "tsup",
@@ -10,12 +10,13 @@
 		"typecheck": "tsc --noEmit",
 		"db:generate": "bun --bun run prisma generate",
 		"db:migrate": "bun --bun run prisma migrate dev",
+		"db:deploy": "bun --bun run prisma migrate deploy",
 		"db:studio": "bun --bun run prisma studio",
 		"db:seed": "bun prisma/seed/run.ts",
-		"format:check": "bunx @biomejs/biome format ./src",
-		"format:fix": "bunx @biomejs/biome format --write ./src",
-		"lint:check": "bunx @biomejs/biome lint ./src",
-		"lint:fix": "bunx @biomejs/biome lint --write ./src"
+		"format:check": "bunx @biomejs/biome format ./src ./prisma/seed",
+		"format:fix": "bunx @biomejs/biome format --write ./src ./prisma/seed",
+		"lint:check": "bunx @biomejs/biome lint ./src ./prisma/seed",
+		"lint:fix": "bunx @biomejs/biome lint --write ./src ./prisma/seed"
 	},
 	"keywords": [],
 	"author": "",

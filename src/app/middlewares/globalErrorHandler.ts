@@ -365,7 +365,7 @@ export const globalErrorHandler = async (
 	else if (err instanceof AppError) {
 		errorMessage = err.message;
 		statusCode = err.statusCode;
-		errorName = "Application Error";
+		errorName = err.code ?? "Application Error";
 	}
 	// Handle Generic Errors
 	else if (err instanceof Error) {
@@ -379,10 +379,13 @@ export const globalErrorHandler = async (
 	// Send error response
 	res.status(statusCode || httpStatus.INTERNAL_SERVER_ERROR).json({
 		success: false,
+		statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+		code: err instanceof AppError ? err.code : undefined,
 		message: errorMessage,
 		errorDetails: {
 			name: errorName,
 			statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+			code: err instanceof AppError ? err.code : undefined,
 			stack: config.node_env === "development" ? err.stack : undefined,
 			prismaErrorCode:
 				err instanceof Prisma.PrismaClientKnownRequestError

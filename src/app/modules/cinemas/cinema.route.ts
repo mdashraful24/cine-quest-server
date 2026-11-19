@@ -10,9 +10,9 @@ router.post(
 	"/",
 	upload.single("image"),
 	validateRequest(createCinemaSchema),
-	CinemaController.create,
+	CinemaController.createCinema,
 );
-router.get("/", CinemaController.list);
+router.get("/", CinemaController.cinemaList);
 router.get("/:id/booking", CinemaController.getBookingQuote);
 
 export const CinemaRoutes = router;

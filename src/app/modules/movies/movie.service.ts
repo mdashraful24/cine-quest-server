@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import httpStatus from "http-status";
 import type { Prisma } from "../../../../generated/prisma/client";
 import { deleteCloudinaryImage, uploadImage } from "../../lib/cloudinary";
@@ -69,13 +70,24 @@ const assertMoviesExist = async (ids: string[]) => {
 	}
 };
 
-const create = async (
+const createMovie = async (
 	payload: TCreateMoviePayload,
 	file?: Express.Multer.File,
 ) => {
+	const movieId = randomUUID();
 	const prerequisiteIds = unique(payload.prerequisiteIds);
 
 	await assertMoviesExist(prerequisiteIds);
+
+	if (
+		wouldCreateCycle(movieId, prerequisiteIds, buildAdjacency(await getEdges()))
+	) {
+		throw new AppError(
+			httpStatus.CONFLICT,
+			"These prerequisites would create a circular dependency.",
+			"CIRCULAR_DEPENDENCY",
+		);
+	}
 
 	let image: Awaited<ReturnType<typeof uploadImage>> | undefined;
 
@@ -90,9 +102,11 @@ const create = async (
 
 		const movie = await prisma.movie.create({
 			data: {
+				id: movieId,
 				title: payload.title,
 				releaseYear: payload.releaseYear,
 				runtimeMinutes: payload.runtimeMinutes,
+				watched: payload.watched,
 				...(image ?? {}),
 				prerequisiteLinks: {
 					create: prerequisiteIds.map((prerequisiteId) => ({
@@ -110,7 +124,7 @@ const create = async (
 	}
 };
 
-const list = async (query: TMovieListQuery) => {
+const movieList = async (query: TMovieListQuery) => {
 	const { page, limit, skip } = getPagination(query.page, query.limit, 20);
 
 	const where: Prisma.MovieWhereInput = {
@@ -137,7 +151,7 @@ const list = async (query: TMovieListQuery) => {
 	};
 };
 
-const update = async (
+const updateMovie = async (
 	id: string,
 	payload: TUpdateMoviePayload,
 	file?: Express.Multer.File,
@@ -184,37 +198,33 @@ const update = async (
 			);
 		}
 
-		await prisma.$transaction(async (tx) => {
-			await tx.movie.update({
-				where: { id },
-				data: {
-					...(payload.title !== undefined ? { title: payload.title } : {}),
-					...(payload.releaseYear !== undefined
-						? { releaseYear: payload.releaseYear }
-						: {}),
-					...(payload.runtimeMinutes !== undefined
-						? { runtimeMinutes: payload.runtimeMinutes }
-						: {}),
-					...(payload.watched !== undefined
-						? { watched: payload.watched }
-						: {}),
-					...(image ?? {}),
-				},
-			});
-
-			if (nextPrerequisiteIds !== undefined) {
-				await tx.moviePrerequisite.deleteMany({ where: { movieId: id } });
-
-				if (nextPrerequisiteIds.length > 0) {
-					await tx.moviePrerequisite.createMany({
-						data: nextPrerequisiteIds.map((prerequisiteId) => ({
-							movieId: id,
-							prerequisiteId,
-						})),
-					});
-				}
-			}
+		await prisma.movie.update({
+			where: { id },
+			data: {
+				...(payload.title !== undefined ? { title: payload.title } : {}),
+				...(payload.releaseYear !== undefined
+					? { releaseYear: payload.releaseYear }
+					: {}),
+				...(payload.runtimeMinutes !== undefined
+					? { runtimeMinutes: payload.runtimeMinutes }
+					: {}),
+				...(payload.watched !== undefined ? { watched: payload.watched } : {}),
+				...(image ?? {}),
+			},
 		});
+
+		if (nextPrerequisiteIds !== undefined) {
+			await prisma.moviePrerequisite.deleteMany({ where: { movieId: id } });
+
+			if (nextPrerequisiteIds.length > 0) {
+				await prisma.moviePrerequisite.createMany({
+					data: nextPrerequisiteIds.map((prerequisiteId) => ({
+						movieId: id,
+						prerequisiteId,
+					})),
+				});
+			}
+		}
 
 		if (image) {
 			await deleteCloudinaryImage(existing.imagePublicId);
@@ -273,4 +283,9 @@ const getRewatchOrder = async (id: string) => {
 	};
 };
 
-export const MovieService = { create, list, update, getRewatchOrder };
+export const MovieService = {
+	createMovie,
+	movieList,
+	updateMovie,
+	getRewatchOrder
+};

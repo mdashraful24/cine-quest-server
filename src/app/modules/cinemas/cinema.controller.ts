@@ -5,8 +5,8 @@ import type { TCreateCinemaPayload } from "./cinema.interface";
 import { CinemaService } from "./cinema.service";
 import { parseBookingQuery } from "./cinema.validation";
 
-const create = catchAsync(async (req, res) => {
-	const cinema = await CinemaService.create(
+const createCinema = catchAsync(async (req, res) => {
+	const cinema = await CinemaService.createCinema(
 		req.body as TCreateCinemaPayload,
 		req.file,
 	);
@@ -19,8 +19,8 @@ const create = catchAsync(async (req, res) => {
 	});
 });
 
-const list = catchAsync(async (_req, res) => {
-	const cinemas = await CinemaService.list();
+const cinemaList = catchAsync(async (_req, res) => {
+	const cinemas = await CinemaService.cinemaList();
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
@@ -47,4 +47,8 @@ const getBookingQuote = catchAsync(async (req, res) => {
 	});
 });
 
-export const CinemaController = { create, list, getBookingQuote };
+export const CinemaController = {
+	createCinema,
+	cinemaList,
+	getBookingQuote
+};

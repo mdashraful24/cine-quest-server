@@ -2,6 +2,7 @@ export type TCreateMoviePayload = {
 	title: string;
 	releaseYear: number;
 	runtimeMinutes: number;
+	watched: boolean;
 	prerequisiteIds: string[];
 };
 

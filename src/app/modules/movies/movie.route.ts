@@ -10,15 +10,15 @@ router.post(
 	"/",
 	upload.single("image"),
 	validateRequest(createMovieSchema),
-	MovieController.create,
+	MovieController.createMovie,
 );
-router.get("/", MovieController.list);
+router.get("/", MovieController.movieList);
 router.get("/:id/rewatch-order", MovieController.getRewatchOrder);
 router.patch(
 	"/:id",
 	upload.single("image"),
 	validateRequest(updateMovieSchema),
-	MovieController.update,
+	MovieController.updateMovie,
 );
 
 export const MovieRoutes = router;

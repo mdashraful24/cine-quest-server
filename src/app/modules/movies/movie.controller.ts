@@ -8,8 +8,8 @@ import type {
 import { MovieService } from "./movie.service";
 import { parseMovieListQuery } from "./movie.validation";
 
-const create = catchAsync(async (req, res) => {
-	const movie = await MovieService.create(
+const createMovie = catchAsync(async (req, res) => {
+	const movie = await MovieService.createMovie(
 		req.body as TCreateMoviePayload,
 		req.file,
 	);
@@ -22,8 +22,8 @@ const create = catchAsync(async (req, res) => {
 	});
 });
 
-const list = catchAsync(async (req, res) => {
-	const result = await MovieService.list(parseMovieListQuery(req.query));
+const movieList = catchAsync(async (req, res) => {
+	const result = await MovieService.movieList(parseMovieListQuery(req.query));
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
@@ -34,8 +34,8 @@ const list = catchAsync(async (req, res) => {
 	});
 });
 
-const update = catchAsync(async (req, res) => {
-	const movie = await MovieService.update(
+const updateMovie = catchAsync(async (req, res) => {
+	const movie = await MovieService.updateMovie(
 		String(req.params.id),
 		req.body as TUpdateMoviePayload,
 		req.file,
@@ -60,4 +60,9 @@ const getRewatchOrder = catchAsync(async (req, res) => {
 	});
 });
 
-export const MovieController = { create, list, update, getRewatchOrder };
+export const MovieController = {
+	createMovie,
+	movieList,
+	updateMovie,
+	getRewatchOrder
+};

@@ -32,7 +32,7 @@ const toCinemaResponse = (cinema: TCinemaRecord) => {
 	};
 };
 
-const create = async (
+const createCinema = async (
 	payload: TCreateCinemaPayload,
 	file?: Express.Multer.File,
 ) => {
@@ -65,7 +65,7 @@ const create = async (
 	}
 };
 
-const list = async () => {
+const cinemaList = async () => {
 	const cinemas = await prisma.cinema.findMany({
 		select: cinemaSelect,
 		orderBy: { createdAt: "desc" },
@@ -103,4 +103,8 @@ const getBookingQuote = async (id: string, groupSize: number) => {
 	};
 };
 
-export const CinemaService = { create, list, getBookingQuote };
+export const CinemaService = {
+	createCinema,
+	cinemaList,
+	getBookingQuote
+};

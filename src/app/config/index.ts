@@ -3,6 +3,9 @@ import path from "node:path";
 
 dotenv.config({ path: path.join(process.cwd(), ".env") });
 
+const isEnabled = (value?: string) =>
+	value === "true" || value === "1" || value === "yes";
+
 export default {
 	node_env: process.env.NODE_ENV,
 	port: process.env.PORT,
@@ -13,5 +16,5 @@ export default {
 	cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME ?? "",
 	cloudinary_api_key: process.env.CLOUDINARY_API_KEY ?? "",
 	cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET ?? "",
-	seed_on_start: process.env.SEED_ON_START ?? "false",
+	seed_on_start: isEnabled(process.env.SEED_ON_START),
 };

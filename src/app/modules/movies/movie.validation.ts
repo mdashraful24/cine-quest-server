@@ -53,6 +53,7 @@ export const createMovieSchema = z
 		title: titleSchema,
 		releaseYear: releaseYearSchema,
 		runtimeMinutes: runtimeMinutesSchema,
+		watched: watchedSchema.optional().default(false),
 		prerequisiteIds: prerequisiteIdsSchema.optional().default([]),
 	})
 	.strict();

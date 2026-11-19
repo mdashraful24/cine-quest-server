@@ -28,6 +28,7 @@ This repository contains the backend API. The core feature logic is hand-written
 | GET | `/api/movies/:id/rewatch-order` | Get ordered prerequisites with progress summary |
 | POST | `/api/cinemas` | Create a cinema |
 | GET | `/api/cinemas` | List cinemas |
+| PATCH | `/api/cinemas/:id` | Update cinema name, bundle sizes, and/or image |
 | DELETE | `/api/cinemas/:id` | Delete a cinema and its bookings |
 | GET | `/api/cinemas/:id/booking?groupSize=6` | Get a booking quote |
 | POST | `/api/cinemas/:id/booking` | Confirm and persist a booking |
@@ -36,6 +37,8 @@ This repository contains the backend API. The core feature logic is hand-written
 | DELETE | `/api/bookings/:id` | Delete a booking |
 
 `GET /health` is available for health checks.
+
+`PATCH /api/cinemas/:id` accepts partial form-data: `name`, `bundleSizes`, `image`, or any combination. At least one field is required.
 
 ## Run Locally
 

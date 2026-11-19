@@ -4,6 +4,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import type {
 	TCreateBookingPayload,
 	TCreateCinemaPayload,
+	TUpdateCinemaPayload,
 } from "./cinema.interface";
 import { CinemaService } from "./cinema.service";
 import { parseBookingQuery } from "./cinema.validation";
@@ -18,6 +19,21 @@ const createCinema = catchAsync(async (req, res) => {
 		statusCode: httpStatus.CREATED,
 		success: true,
 		message: "Cinema created successfully.",
+		data: cinema,
+	});
+});
+
+const updateCinema = catchAsync(async (req, res) => {
+	const cinema = await CinemaService.updateCinema(
+		String(req.params.id),
+		req.body as TUpdateCinemaPayload,
+		req.file,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Cinema updated successfully.",
 		data: cinema,
 	});
 });
@@ -76,6 +92,7 @@ const deleteCinema = catchAsync(async (req, res) => {
 
 export const CinemaController = {
 	createCinema,
+	updateCinema,
 	cinemaList,
 	getBookingQuote,
 	createBooking,

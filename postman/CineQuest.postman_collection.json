@@ -412,6 +412,46 @@
           "response": []
         },
         {
+          "name": "Update Cinema (form-data)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Updated Test Cinema",
+                  "type": "text"
+                },
+                {
+                  "key": "bundleSizes",
+                  "value": "4,6,8",
+                  "type": "text",
+                  "description": "Comma-separated bundle sizes between 1 and 500."
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "description": "Optional replacement image. Enable this row and choose jpeg, png, webp, or gif.",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/cinemas/{{createdCinemaId}}",
+              "host": [
+                "{{baseUrl}}{{apiPrefix}}"
+              ],
+              "path": [
+                "cinemas",
+                "{{createdCinemaId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Delete Cinema",
           "event": [
             {

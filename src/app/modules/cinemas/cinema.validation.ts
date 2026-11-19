@@ -44,6 +44,12 @@ export const createCinemaSchema = z
 	})
 	.strict();
 
+export const updateCinemaSchema = createCinemaSchema
+	.partial()
+	.refine((payload) => Object.keys(payload).length > 0, {
+		message: "Provide at least one field to update.",
+	});
+
 export const parseBookingQuery = (query: unknown) => {
 	const result = bookingQuerySchema.safeParse(query ?? {});
 

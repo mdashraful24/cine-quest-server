@@ -7,6 +7,7 @@ import { toBookingResponse } from "../bookings/booking.service";
 import type {
 	TCreateBookingPayload,
 	TCreateCinemaPayload,
+	TUpdateCinemaPayload,
 } from "./cinema.interface";
 
 const cinemaSelect = {
@@ -61,6 +62,68 @@ const createCinema = async (
 			},
 			select: cinemaSelect,
 		});
+
+		return toCinemaResponse(cinema);
+	} catch (error) {
+		await deleteCloudinaryImage(image?.imagePublicId);
+		throw error;
+	}
+};
+
+const updateCinema = async (
+	id: string,
+	payload: TUpdateCinemaPayload,
+	file?: Express.Multer.File,
+) => {
+	let image: Awaited<ReturnType<typeof uploadImage>> | undefined;
+	let existingImagePublicId: string | null = null;
+
+	try {
+		const existing = await prisma.cinema.findUnique({
+			where: { id },
+			select: { imagePublicId: true },
+		});
+
+		if (!existing) {
+			throw new AppError(
+				httpStatus.NOT_FOUND,
+				"Cinema not found.",
+				"NOT_FOUND",
+			);
+		}
+
+		existingImagePublicId = existing.imagePublicId;
+
+		if (file) {
+			image = await uploadImage(
+				file,
+				"cinequest/cinemas",
+				"Failed to upload cinema image.",
+			);
+		}
+
+		const cinema = await prisma.cinema.update({
+			where: { id },
+			data: {
+				...(payload.name !== undefined ? { name: payload.name } : {}),
+				...(image ?? {}),
+				...(payload.bundleSizes
+					? {
+							bundleSizes: {
+								deleteMany: {},
+								create: payload.bundleSizes.map((seatCount) => ({
+									seatCount,
+								})),
+							},
+						}
+					: {}),
+			},
+			select: cinemaSelect,
+		});
+
+		if (file && existingImagePublicId) {
+			await deleteCloudinaryImage(existingImagePublicId).catch(() => undefined);
+		}
 
 		return toCinemaResponse(cinema);
 	} catch (error) {
@@ -159,6 +222,7 @@ const deleteCinema = async (id: string) => {
 
 export const CinemaService = {
 	createCinema,
+	updateCinema,
 	cinemaList,
 	getBookingQuote,
 	createBooking,

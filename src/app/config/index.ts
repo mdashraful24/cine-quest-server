@@ -13,8 +13,5 @@ export default {
 	frontend_url: process.env.FRONTEND_URL,
 	api_prefix: process.env.API_PREFIX,
 	trust_proxy: process.env.TRUST_PROXY,
-	cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME ?? "",
-	cloudinary_api_key: process.env.CLOUDINARY_API_KEY ?? "",
-	cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET ?? "",
 	seed_on_start: isEnabled(process.env.SEED_ON_START),
 };

@@ -2,7 +2,6 @@ import app from "./app";
 import config from "./app/config";
 import logger from "./app/logger";
 import { prisma } from "./app/lib/prisma";
-import { isCloudinaryConfigured } from "./app/lib/cloudinary";
 import { seedDatabase } from "../prisma/seed/seed";
 
 const PORT = Number(config.port);
@@ -15,14 +14,6 @@ const main = async () => {
 
 		if (config.seed_on_start) {
 			await seedDatabase();
-		}
-
-		if (isCloudinaryConfigured) {
-			logger.info("Cloudinary image uploads are configured.");
-		} else {
-			logger.warn(
-				"Cloudinary image uploads are disabled (missing CLOUDINARY_* environment variables).",
-			);
 		}
 
 		const server = app.listen(PORT, () => {

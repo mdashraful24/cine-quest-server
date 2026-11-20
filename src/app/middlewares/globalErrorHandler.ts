@@ -1,63 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
-import multer from "multer";
 import config from "../config";
 import { AppError } from "../utils/AppError";
 import { Prisma } from "../../../generated/prisma/client";
-
-const handleMulterError = (err: multer.MulterError) => {
-	switch (err.code) {
-		case "LIMIT_FILE_SIZE":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: "File is too large. Maximum allowed size is 5 MB.",
-				name: "File Size Error",
-			};
-		case "LIMIT_FILE_COUNT":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: "Too many files uploaded.",
-				name: "File Count Error",
-			};
-		case "LIMIT_UNEXPECTED_FILE":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message:
-					"Unexpected file field or too many files. Use the 'image' field and upload one image only.",
-				name: "Unexpected File Error",
-			};
-		case "LIMIT_FIELD_KEY":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: "Field name is too long.",
-				name: "Upload Field Error",
-			};
-		case "LIMIT_FIELD_VALUE":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: "Field value is too long.",
-				name: "Upload Field Error",
-			};
-		case "LIMIT_FIELD_COUNT":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: "Too many fields in the form.",
-				name: "Upload Field Error",
-			};
-		case "LIMIT_PART_COUNT":
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: "Too many parts in the multipart form.",
-				name: "Upload Part Error",
-			};
-		default:
-			return {
-				statusCode: httpStatus.BAD_REQUEST,
-				message: err.message,
-				name: "File Upload Error",
-			};
-	}
-};
 
 const handlePrismaKnownRequestError = (
 	err: Prisma.PrismaClientKnownRequestError,
@@ -311,14 +256,15 @@ const handlePrismaInitializationError = (
 };
 
 export const globalErrorHandler = async (
-	err: any,
+	err: unknown,
 	_req: Request,
 	res: Response,
 	_next: NextFunction,
 ) => {
 	let statusCode: number = httpStatus.INTERNAL_SERVER_ERROR;
-	let errorMessage = err.message || "Internal Server Error";
-	let errorName = err.name || "Internal Server Error";
+	let errorMessage =
+		err instanceof Error ? err.message : "Internal Server Error";
+	let errorName = err instanceof Error ? err.name : "Internal Server Error";
 
 	// Handle Prisma Validation Errors
 	if (err instanceof Prisma.PrismaClientValidationError) {
@@ -354,22 +300,11 @@ export const globalErrorHandler = async (
 			"A critical database engine error occurred. Please contact support.";
 		errorName = "Database Engine Error";
 	}
-	// Handle Multer Upload Errors
-	else if (err instanceof multer.MulterError) {
-		const handled = handleMulterError(err);
-		statusCode = handled.statusCode;
-		errorMessage = handled.message;
-		errorName = handled.name;
-	}
 	// Handle Custom AppError
 	else if (err instanceof AppError) {
 		errorMessage = err.message;
 		statusCode = err.statusCode;
 		errorName = err.code ?? "Application Error";
-	}
-	// Handle Generic Errors
-	else if (err instanceof Error) {
-		errorMessage = err.message;
 	}
 
 	if (config.node_env === "development") {
@@ -386,7 +321,10 @@ export const globalErrorHandler = async (
 			name: errorName,
 			statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
 			code: err instanceof AppError ? err.code : undefined,
-			stack: config.node_env === "development" ? err.stack : undefined,
+			stack:
+				config.node_env === "development" && err instanceof Error
+					? err.stack
+					: undefined,
 			prismaErrorCode:
 				err instanceof Prisma.PrismaClientKnownRequestError
 					? err.code

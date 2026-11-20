@@ -12,7 +12,6 @@ import { parseBookingQuery } from "./cinema.validation";
 const createCinema = catchAsync(async (req, res) => {
 	const cinema = await CinemaService.createCinema(
 		req.body as TCreateCinemaPayload,
-		req.file,
 	);
 
 	sendResponse(res, {
@@ -27,7 +26,6 @@ const updateCinema = catchAsync(async (req, res) => {
 	const cinema = await CinemaService.updateCinema(
 		String(req.params.id),
 		req.body as TUpdateCinemaPayload,
-		req.file,
 	);
 
 	sendResponse(res, {

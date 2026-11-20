@@ -3,9 +3,6 @@ model Cinema {
 
   name String @unique
 
-  imageUrl      String?
-  imagePublicId String?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

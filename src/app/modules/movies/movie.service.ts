@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 import httpStatus from "http-status";
 import type { Prisma } from "../../../../generated/prisma/client";
-import { deleteCloudinaryImage, uploadImage } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import {
@@ -23,7 +22,6 @@ const movieSelect = {
 	releaseYear: true,
 	runtimeMinutes: true,
 	watched: true,
-	imageUrl: true,
 	createdAt: true,
 	updatedAt: true,
 	prerequisiteLinks: { select: { prerequisiteId: true } },
@@ -35,7 +33,6 @@ type TMovieRecord = {
 	releaseYear: number;
 	runtimeMinutes: number;
 	watched: boolean;
-	imageUrl: string | null;
 	createdAt: Date;
 	updatedAt: Date;
 	prerequisiteLinks: { prerequisiteId: string }[];
@@ -71,10 +68,7 @@ const assertMoviesExist = async (ids: string[]) => {
 	}
 };
 
-const createMovie = async (
-	payload: TCreateMoviePayload,
-	file?: Express.Multer.File,
-) => {
+const createMovie = async (payload: TCreateMoviePayload) => {
 	const movieId = randomUUID();
 	const prerequisiteIds = unique(payload.prerequisiteIds);
 
@@ -90,39 +84,23 @@ const createMovie = async (
 		);
 	}
 
-	let image: Awaited<ReturnType<typeof uploadImage>> | undefined;
-
-	try {
-		if (file) {
-			image = await uploadImage(
-				file,
-				"cinequest/movies",
-				"Failed to upload movie image.",
-			);
-		}
-
-		const movie = await prisma.movie.create({
-			data: {
-				id: movieId,
-				title: payload.title,
-				releaseYear: payload.releaseYear,
-				runtimeMinutes: payload.runtimeMinutes,
-				watched: payload.watched,
-				...(image ?? {}),
-				prerequisiteLinks: {
-					create: prerequisiteIds.map((prerequisiteId) => ({
-						prerequisite: { connect: { id: prerequisiteId } },
-					})),
-				},
+	const movie = await prisma.movie.create({
+		data: {
+			id: movieId,
+			title: payload.title,
+			releaseYear: payload.releaseYear,
+			runtimeMinutes: payload.runtimeMinutes,
+			watched: payload.watched,
+			prerequisiteLinks: {
+				create: prerequisiteIds.map((prerequisiteId) => ({
+					prerequisite: { connect: { id: prerequisiteId } },
+				})),
 			},
-			select: movieSelect,
-		});
+		},
+		select: movieSelect,
+	});
 
-		return toMovieResponse(movie);
-	} catch (error) {
-		await deleteCloudinaryImage(image?.imagePublicId);
-		throw error;
-	}
+	return toMovieResponse(movie);
 };
 
 const movieList = async (query: TMovieListQuery) => {
@@ -152,14 +130,10 @@ const movieList = async (query: TMovieListQuery) => {
 	};
 };
 
-const updateMovie = async (
-	id: string,
-	payload: TUpdateMoviePayload,
-	file?: Express.Multer.File,
-) => {
+const updateMovie = async (id: string, payload: TUpdateMoviePayload) => {
 	const existing = await prisma.movie.findUnique({
 		where: { id },
-		select: { id: true, imagePublicId: true },
+		select: { id: true },
 	});
 
 	if (!existing) {
@@ -188,75 +162,53 @@ const updateMovie = async (
 		}
 	}
 
-	let image: Awaited<ReturnType<typeof uploadImage>> | undefined;
-
-	try {
-		if (file) {
-			image = await uploadImage(
-				file,
-				"cinequest/movies",
-				"Failed to upload movie image.",
-			);
-		}
-
-		const operations: Prisma.PrismaPromise<unknown>[] = [
-			prisma.movie.update({
-				where: { id },
-				data: {
-					...(payload.title !== undefined ? { title: payload.title } : {}),
-					...(payload.releaseYear !== undefined
-						? { releaseYear: payload.releaseYear }
-						: {}),
-					...(payload.runtimeMinutes !== undefined
-						? { runtimeMinutes: payload.runtimeMinutes }
-						: {}),
-					...(payload.watched !== undefined
-						? { watched: payload.watched }
-						: {}),
-					...(image ?? {}),
-				},
-			}),
-		];
-
-		if (nextPrerequisiteIds !== undefined) {
-			operations.push(
-				prisma.moviePrerequisite.deleteMany({ where: { movieId: id } }),
-			);
-
-			if (nextPrerequisiteIds.length > 0) {
-				operations.push(
-					prisma.moviePrerequisite.createMany({
-						data: nextPrerequisiteIds.map((prerequisiteId) => ({
-							movieId: id,
-							prerequisiteId,
-						})),
-					}),
-				);
-			}
-		}
-
-		await prisma.$transaction(operations);
-
-		if (image) {
-			await deleteCloudinaryImage(existing.imagePublicId);
-		}
-
-		const movie = await prisma.movie.findUniqueOrThrow({
+	const operations: Prisma.PrismaPromise<unknown>[] = [
+		prisma.movie.update({
 			where: { id },
-			select: movieSelect,
-		});
+			data: {
+				...(payload.title !== undefined ? { title: payload.title } : {}),
+				...(payload.releaseYear !== undefined
+					? { releaseYear: payload.releaseYear }
+					: {}),
+				...(payload.runtimeMinutes !== undefined
+					? { runtimeMinutes: payload.runtimeMinutes }
+					: {}),
+				...(payload.watched !== undefined ? { watched: payload.watched } : {}),
+			},
+		}),
+	];
 
-		return toMovieResponse(movie);
-	} catch (error) {
-		await deleteCloudinaryImage(image?.imagePublicId);
-		throw error;
+	if (nextPrerequisiteIds !== undefined) {
+		operations.push(
+			prisma.moviePrerequisite.deleteMany({ where: { movieId: id } }),
+		);
+
+		if (nextPrerequisiteIds.length > 0) {
+			operations.push(
+				prisma.moviePrerequisite.createMany({
+					data: nextPrerequisiteIds.map((prerequisiteId) => ({
+						movieId: id,
+						prerequisiteId,
+					})),
+				}),
+			);
+		}
 	}
+
+	await prisma.$transaction(operations);
+
+	const movie = await prisma.movie.findUniqueOrThrow({
+		where: { id },
+		select: movieSelect,
+	});
+
+	return toMovieResponse(movie);
 };
 
 const deleteMovie = async (id: string) => {
 	const movie = await prisma.movie.findUnique({
 		where: { id },
-		select: { id: true, imagePublicId: true },
+		select: { id: true },
 	});
 
 	if (!movie) {
@@ -270,7 +222,6 @@ const deleteMovie = async (id: string) => {
 	});
 
 	await prisma.movie.delete({ where: { id } });
-	await deleteCloudinaryImage(movie.imagePublicId);
 
 	return { id };
 };

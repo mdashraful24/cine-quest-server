@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { upload } from "../../lib/multer";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { CinemaController } from "./cinema.controller";
 import {
@@ -12,14 +11,12 @@ const router = Router();
 
 router.post(
 	"/",
-	upload.single("image"),
 	validateRequest(createCinemaSchema),
 	CinemaController.createCinema,
 );
 router.get("/", CinemaController.cinemaList);
 router.patch(
 	"/:id",
-	upload.single("image"),
 	validateRequest(updateCinemaSchema),
 	CinemaController.updateCinema,
 );

@@ -9,10 +9,7 @@ import { MovieService } from "./movie.service";
 import { parseMovieListQuery } from "./movie.validation";
 
 const createMovie = catchAsync(async (req, res) => {
-	const movie = await MovieService.createMovie(
-		req.body as TCreateMoviePayload,
-		req.file,
-	);
+	const movie = await MovieService.createMovie(req.body as TCreateMoviePayload);
 
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,
@@ -38,7 +35,6 @@ const updateMovie = catchAsync(async (req, res) => {
 	const movie = await MovieService.updateMovie(
 		String(req.params.id),
 		req.body as TUpdateMoviePayload,
-		req.file,
 	);
 
 	sendResponse(res, {

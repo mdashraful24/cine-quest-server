@@ -1,0 +1,4 @@
+ALTER TABLE "movies" DROP COLUMN IF EXISTS "imageUrl";
+ALTER TABLE "movies" DROP COLUMN IF EXISTS "imagePublicId";
+ALTER TABLE "cinemas" DROP COLUMN IF EXISTS "imageUrl";
+ALTER TABLE "cinemas" DROP COLUMN IF EXISTS "imagePublicId";

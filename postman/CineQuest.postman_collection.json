@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "54f2837e-ec9c-4241-9e4f-d81284f6c1de",
     "name": "CineQuest",
-    "description": "CineQuest API test collection. Run `bun run db:seed` first so list requests can capture seeded IDs. Image-capable endpoints use form-data with a disabled `image` file row; enable it and choose a file to test upload. Other bodies use raw JSON.",
+    "description": "CineQuest API test collection. Run `bun run db:seed` first so list requests can capture seeded IDs. Request bodies use raw JSON.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "59636503"
   },
@@ -44,7 +44,7 @@
       "name": "Movies",
       "item": [
         {
-          "name": "Create Movie (form-data)",
+          "name": "Create Movie (raw JSON)",
           "event": [
             {
               "listen": "test",
@@ -62,44 +62,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "title",
-                  "value": "Guardians of the Galaxy {{$randomInt}}",
-                  "type": "text"
-                },
-                {
-                  "key": "releaseYear",
-                  "value": "2014",
-                  "type": "text"
-                },
-                {
-                  "key": "runtimeMinutes",
-                  "value": "122",
-                  "type": "text"
-                },
-                {
-                  "key": "watched",
-                  "value": "false",
-                  "type": "text"
-                },
-                {
-                  "key": "prerequisiteIds",
-                  "value": "{{movieId}}",
-                  "type": "text",
-                  "description": "Comma-separated movie IDs. Empty value is valid for no prerequisites."
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
-                  "value": "",
-                  "disabled": true
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Guardians of the Galaxy {{$randomInt}}\",\n  \"releaseYear\": 2014,\n  \"runtimeMinutes\": 122,\n  \"watched\": false,\n  \"prerequisiteIds\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             },
             "url": {
               "raw": "{{baseUrl}}{{apiPrefix}}/movies",
@@ -182,7 +158,7 @@
           "response": []
         },
         {
-          "name": "Update Movie (form-data)",
+          "name": "Update Movie (raw JSON)",
           "event": [
             {
               "listen": "test",
@@ -202,23 +178,20 @@
           ],
           "request": {
             "method": "PATCH",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "watched",
-                  "value": "true",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
-                  "value": null,
-                  "disabled": true
+              "mode": "raw",
+              "raw": "{\n  \"watched\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             },
             "url": {
               "raw": "{{baseUrl}}{{apiPrefix}}/movies/{{movieId}}",
@@ -323,7 +296,7 @@
       "name": "Cinemas",
       "item": [
         {
-          "name": "Create Cinema (form-data)",
+          "name": "Create Cinema (raw JSON)",
           "event": [
             {
               "listen": "test",
@@ -338,31 +311,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": "Test Cinema {{$randomInt}}",
-                  "type": "text"
-                },
-                {
-                  "key": "bundleSizes",
-                  "value": "4,6",
-                  "type": "text",
-                  "description": "Comma-separated bundle sizes between 1 and 500."
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "description": "Optional image. Enable this row and choose jpeg, png, webp, or gif.",
-                  "disabled": true,
-                  "src": [
-                    "/C:/Users/USER/Pictures/docker-learning-roadmap-poster.png"
-                  ]
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Cinema {{$randomInt}}\",\n  \"bundleSizes\": [4, 6]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             },
             "url": {
               "raw": "{{baseUrl}}{{apiPrefix}}/cinemas",
@@ -412,31 +374,23 @@
           "response": []
         },
         {
-          "name": "Update Cinema (form-data)",
+          "name": "Update Cinema (raw JSON)",
           "request": {
             "method": "PATCH",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": "Updated Test Cinema",
-                  "type": "text"
-                },
-                {
-                  "key": "bundleSizes",
-                  "value": "4,6,8",
-                  "type": "text",
-                  "description": "Comma-separated bundle sizes between 1 and 500."
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "description": "Optional replacement image. Enable this row and choose jpeg, png, webp, or gif.",
-                  "disabled": true
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Test Cinema\",\n  \"bundleSizes\": [4, 6, 8]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             },
             "url": {
               "raw": "{{baseUrl}}{{apiPrefix}}/cinemas/{{createdCinemaId}}",

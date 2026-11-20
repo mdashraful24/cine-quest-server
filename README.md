@@ -28,7 +28,7 @@ This repository contains the backend API. The core feature logic is hand-written
 | GET | `/api/movies/:id/rewatch-order` | Get ordered prerequisites with progress summary |
 | POST | `/api/cinemas` | Create a cinema |
 | GET | `/api/cinemas` | List cinemas |
-| PATCH | `/api/cinemas/:id` | Update cinema name, bundle sizes, and/or image |
+| PATCH | `/api/cinemas/:id` | Update cinema name and/or bundle sizes |
 | DELETE | `/api/cinemas/:id` | Delete a cinema and its bookings |
 | GET | `/api/cinemas/:id/booking?groupSize=6` | Get a booking quote |
 | POST | `/api/cinemas/:id/booking` | Confirm and persist a booking |
@@ -38,7 +38,7 @@ This repository contains the backend API. The core feature logic is hand-written
 
 `GET /health` is available for health checks.
 
-`PATCH /api/cinemas/:id` accepts partial form-data: `name`, `bundleSizes`, `image`, or any combination. At least one field is required.
+`PATCH /api/cinemas/:id` accepts a partial JSON body: `name`, `bundleSizes`, or any combination. At least one field is required.
 
 ## Run Locally
 
@@ -71,6 +71,8 @@ The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and t
 
 ```bash
 bun run typecheck
+bun run test
+bun run db:generate
 bun run build
 bun run format:check
 bun run lint:check
@@ -110,8 +112,6 @@ erDiagram
     int releaseYear
     int runtimeMinutes
     boolean watched
-    string imageUrl
-    string imagePublicId
     datetime createdAt
     datetime updatedAt
   }
@@ -124,8 +124,6 @@ erDiagram
   CINEMAS {
     string id PK
     string name UK
-    string imageUrl
-    string imagePublicId
     datetime createdAt
     datetime updatedAt
   }

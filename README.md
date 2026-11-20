@@ -340,7 +340,3 @@ erDiagram
     datetime updatedAt
   }
 ```
-
-## AI Usage
-
-AI tools were used for requirement extraction, implementation review, edge-case test planning, and documentation drafting. The final code was reviewed manually, and the feature logic for dependency ordering and bundle optimization was implemented directly in the repository as described above.

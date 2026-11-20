@@ -11,7 +11,7 @@ The API exposes all assessment features: movie and prerequisite management, rewa
 | Environment | Base URL |
 |---|---|
 | Local | `http://localhost:5000/api` |
-| Production | `https://doomsday-ready-server.vercel.app/api` |
+| Production | `https://doomsday-ready-server-inky.vercel.app/api` |
 
 Health check:
 
@@ -45,7 +45,7 @@ VITE_API_BASE_URL=http://localhost:5000/api
 For production:
 
 ```env
-VITE_API_BASE_URL=https://doomsday-ready-server.vercel.app/api
+VITE_API_BASE_URL=https://doomsday-ready-server-inky.vercel.app/api
 ```
 
 The server reads its own prefix from `API_PREFIX`, which defaults to `/api`. If the prefix changes, every client base URL must be updated to match.

@@ -11,7 +11,7 @@ const logFormat = format.combine(
 const logger = createLogger({
 	level: config.node_env === "production" ? "info" : "debug",
 	format: logFormat,
-	defaultMeta: { service: "cine-quest-server" },
+	defaultMeta: { service: "doomsday-ready-server" },
 	transports: [
 		new transports.Console({
 			format:

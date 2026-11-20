@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "cine-quest-server",
+      "name": "doomsday-ready-server",
       "dependencies": {
         "@prisma/adapter-pg": "^7.10.1",
         "@prisma/client": "7",

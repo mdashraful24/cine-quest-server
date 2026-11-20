@@ -47,7 +47,7 @@ app.get("/health", (_req, res) => {
 	res.status(httpStatus.OK).json({
 		success: true,
 		statusCode: httpStatus.OK,
-		message: "CineQuest API is running.",
+		message: "Doomsday Ready API is running.",
 		data: { uptime: Math.round(process.uptime()) },
 	});
 });

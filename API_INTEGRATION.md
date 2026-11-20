@@ -1,8 +1,8 @@
-# CineQuest API Integration Guide
+# Doomsday Ready API Integration Guide
 
 ## Purpose
 
-This document describes how to integrate with the CineQuest backend API. It covers base URLs, request and response conventions, endpoint contracts, payload shapes, error handling, and a recommended integration sequence.
+This document describes how to integrate with the Doomsday Ready backend API. It covers base URLs, request and response conventions, endpoint contracts, payload shapes, error handling, and a recommended integration sequence.
 
 The API exposes all assessment features: movie and prerequisite management, rewatch ordering, cinema bundle configuration, booking quotes, and persistent bookings.
 
@@ -11,7 +11,7 @@ The API exposes all assessment features: movie and prerequisite management, rewa
 | Environment | Base URL |
 |---|---|
 | Local | `http://localhost:5000/api` |
-| Production | `https://cine-quest-server.vercel.app/api` |
+| Production | `https://doomsday-ready-server.vercel.app/api` |
 
 Health check:
 
@@ -27,7 +27,7 @@ The health endpoint is not under `/api`. It returns:
 {
   "success": true,
   "statusCode": 200,
-  "message": "CineQuest API is running.",
+  "message": "Doomsday Ready API is running.",
   "data": {
     "uptime": 123
   }
@@ -45,7 +45,7 @@ VITE_API_BASE_URL=http://localhost:5000/api
 For production:
 
 ```env
-VITE_API_BASE_URL=https://cine-quest-server.vercel.app/api
+VITE_API_BASE_URL=https://doomsday-ready-server.vercel.app/api
 ```
 
 The server reads its own prefix from `API_PREFIX`, which defaults to `/api`. If the prefix changes, every client base URL must be updated to match.

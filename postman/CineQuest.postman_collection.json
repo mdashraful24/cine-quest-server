@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "54f2837e-ec9c-4241-9e4f-d81284f6c1de",
-    "name": "CineQuest",
-    "description": "CineQuest API test collection. Run `bun run db:seed` first so list requests can capture seeded IDs. Request bodies use raw JSON.",
+    "name": "Doomsday Ready",
+    "description": "Doomsday Ready API test collection. Run `bun run db:seed` first so list requests can capture seeded IDs. Request bodies use raw JSON.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "59636503"
   },

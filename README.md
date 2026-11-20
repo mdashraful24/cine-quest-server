@@ -1,8 +1,8 @@
-# CineQuest Server
+# Doomsday Ready Server
 
 ## Overview
 
-CineQuest is a movie rewatch planning and cinema booking platform with the tagline **Plan Your Rewatch. Book Your Premiere.**
+Doomsday Ready is a movie rewatch planning and cinema booking platform with the tagline **Plan Your Rewatch. Book Your Premiere.**
 
 This repository contains the backend REST API. It manages the movie library, prerequisite graph, rewatch ordering, cinema bundle sizes, booking quotes, and persisted bookings. The core feature logic is hand-written in `src/app/utils/graph.ts` and `src/app/utils/bundle.ts`; no external solver library is used.
 
@@ -217,7 +217,7 @@ The demo seed adds 8 movies with prerequisite links and 3 cinemas with bundle si
 
 | Variable | Required | Description | Example |
 |---|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/cinequest` |
+| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/doomsdayready` |
 | `PORT` | Yes | Port used by the API | `5000` |
 | `NODE_ENV` | Yes | Runtime mode | `development` |
 | `API_PREFIX` | Yes | Base path for all API routes | `/api` |
@@ -229,7 +229,7 @@ Do not commit real `.env` values. Use `.env.example` as the template and keep se
 
 ## Docker Compose
 
-From the workspace root containing both `cine-quest-client` and `cine-quest-server`:
+From the workspace root containing both `doomsday-ready-client` and `doomsday-ready-server`:
 
 ```bash
 docker compose up --build
@@ -272,11 +272,11 @@ The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and t
 
 ## Relevant Links
 
-- Live client: https://cine-quest-client.vercel.app
-- Live API: https://cine-quest-server.vercel.app/api
+- Live client: https://doomsday-ready-client.vercel.app
+- Live API: https://doomsday-ready-server.vercel.app/api
 - Postman collection: https://documenter.getpostman.com/view/59636503/2sBYHbtcid
-- Client repository: https://github.com/mdashraful24/cine-quest-client.git
-- Server repository: https://github.com/mdashraful24/cine-quest-server.git
+- Client repository: https://github.com/mdashraful24/doomsday-ready-client.git
+- Server repository: https://github.com/mdashraful24/doomsday-ready-server.git
 
 ## Assumptions
 

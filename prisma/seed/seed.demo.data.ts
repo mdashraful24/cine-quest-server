@@ -5,21 +5,21 @@ export const demoMovies: SeedMovie[] = [
 		title: "Iron Man",
 		releaseYear: 2008,
 		runtimeMinutes: 126,
-		watched: true,
+		watched: false,
 		prerequisites: [],
 	},
 	{
 		title: "Captain America: The First Avenger",
 		releaseYear: 2011,
 		runtimeMinutes: 124,
-		watched: true,
+		watched: false,
 		prerequisites: [],
 	},
 	{
 		title: "The Avengers",
 		releaseYear: 2012,
 		runtimeMinutes: 143,
-		watched: true,
+		watched: false,
 		prerequisites: ["Iron Man", "Captain America: The First Avenger"],
 	},
 	{
@@ -33,7 +33,7 @@ export const demoMovies: SeedMovie[] = [
 		title: "Thor: Ragnarok",
 		releaseYear: 2017,
 		runtimeMinutes: 130,
-		watched: true,
+		watched: false,
 		prerequisites: [],
 	},
 	{
@@ -61,15 +61,19 @@ export const demoMovies: SeedMovie[] = [
 
 export const demoCinemas: SeedCinema[] = [
 	{
-		name: "Cineplex Downtown",
-		bundleSizes: [2, 5],
-	},
-	{
 		name: "IMAX Central",
 		bundleSizes: [1, 3, 4],
 	},
 	{
+		name: "Cineplex Downtown",
+		bundleSizes: [2, 5],
+	},
+	{
 		name: "Premiere House",
 		bundleSizes: [6, 9, 20],
+	},
+	{
+		name: "Grand Hall",
+		bundleSizes: [4, 6],
 	},
 ];

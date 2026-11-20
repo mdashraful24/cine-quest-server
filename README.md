@@ -270,19 +270,12 @@ The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and t
 - Self-dependency rejection.
 - Independent movie relationships allowed.
 
-## Deployment
-
-- Live client: https://doomsday-ready-client.vercel.app
-- Deployed API: https://doomsday-ready-server-inky.vercel.app
-
 ## Relevant Links
 
 - Live client: https://doomsday-ready-client.vercel.app
-- Live API: https://doomsday-ready-server.vercel.app/api
 - Deployed API: https://doomsday-ready-server-inky.vercel.app
 - Postman collection: https://documenter.getpostman.com/view/59636503/2sBYPv2XTa
 - Client repository: https://github.com/mdashraful24/doomsday-ready-client.git
-- Server repository: https://github.com/mdashraful24/doomsday-ready-server.git
 
 ## Assumptions
 

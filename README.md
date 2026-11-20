@@ -1,5 +1,7 @@
 # Doomsday Ready Server
 
+This repository contains the REST API for Doomsday Ready. The React/Vite client is maintained in the separate Doomsday Ready client repository.
+
 ## Overview
 
 Doomsday Ready is a movie rewatch planning and cinema booking platform with the tagline **Plan Your Rewatch. Book Your Premiere.**
@@ -14,7 +16,7 @@ The API is built with Express, TypeScript, Prisma, and PostgreSQL. Requests are 
 - TypeScript 7 — static typing for routes, controllers, services, and validation.
 - Prisma 7 — type-safe database access and migrations.
 - PostgreSQL — relational storage for movies, cinemas, prerequisites, and bookings.
-- Zod 4 — request body, query, and environment validation.
+- Zod 4 — request body and query validation.
 - Winston — structured application logging.
 - Helmet — security response headers.
 - CORS — controlled frontend access.
@@ -76,8 +78,9 @@ The API is built with Express, TypeScript, Prisma, and PostgreSQL. Requests are 
 
 | Path | Purpose |
 |---|---|
-| `src/server.ts` | App bootstrap, middleware setup, and server startup |
-| `src/app/config` | Validated environment configuration |
+| `src/server.ts` | Database connection, startup, and graceful shutdown |
+| `src/app.ts` | Middleware and route wiring |
+| `src/app/config` | Environment configuration |
 | `src/app/middlewares` | Validation, error handling, and request middleware |
 | `src/app/modules/movies` | Movie routes, controllers, services, validation, and types |
 | `src/app/modules/cinemas` | Cinema routes, controllers, services, validation, and types |
@@ -211,7 +214,7 @@ bun run dev
 
 The API runs at `http://localhost:5000/api`, and `GET /health` is available at `http://localhost:5000/health`.
 
-The demo seed adds 8 movies with prerequisite links and 3 cinemas with bundle sizes. It is manual by default; set `SEED_ON_START=true` only when you want it to run on boot. Re-running the seed resets demo movie watched states, demo prerequisite links, and demo cinema bundle sizes.
+The demo seed adds 8 movies with prerequisite links and 4 cinemas with bundle sizes. It is manual by default; set `SEED_ON_START=true` only when you want it to run on boot. Re-running the seed resets demo movie watched states, demo prerequisite links, and demo cinema bundle sizes.
 
 ## Environment Variables (from .env.example)
 
@@ -226,18 +229,6 @@ The demo seed adds 8 movies with prerequisite links and 3 cinemas with bundle si
 | `SEED_ON_START` | No | Creates demo data on boot | `false` |
 
 Do not commit real `.env` values. Use `.env.example` as the template and keep secrets local or in the deployment platform environment settings.
-
-## Docker Compose
-
-From the workspace root containing both `doomsday-ready-client` and `doomsday-ready-server`:
-
-```bash
-docker compose up --build
-```
-
-This starts PostgreSQL, the API, and the client. The API applies migrations, seeds demo data, and serves at `http://localhost:5000/api`; the client serves at `http://localhost:3000`.
-
-The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and the API only.
 
 ## Useful Commands
 
@@ -269,6 +260,10 @@ The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and t
 - Indirect cycle rejection.
 - Self-dependency rejection.
 - Independent movie relationships allowed.
+
+## AI Tool Usage
+
+As required by the assessment brief, AI tools were used in this repository for source analysis, requirements checking, documentation drafting/review, and verification guidance only. The tool was the `opencode` CLI with model `opencode/big-pickle` on 2026-11-20. No AI-generated dependency or runtime AI service was added. The core Feature 1 and Feature 2 logic in `src/app/utils/graph.ts` and `src/app/utils/bundle.ts` is hand-written and uses no solver library. See [AI_USAGE.md](./AI_USAGE.md) for the detailed record.
 
 ## Relevant Links
 

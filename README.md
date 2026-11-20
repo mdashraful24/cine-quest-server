@@ -88,7 +88,7 @@ The API is built with Express, TypeScript, Prisma, and PostgreSQL. Requests are 
 | `prisma/schema` | Prisma models for movies, cinemas, and bookings |
 | `prisma/migrations` | Database migration history |
 | `prisma/seed` | Demo movie, cinema, and prerequisite seed data |
-| `postman` | Postman collection for API testing |
+| `postman/Doomsday Ready.postman_collection.json` | Postman collection for API testing |
 
 ## API Reference
 
@@ -270,11 +270,17 @@ The backend-only `docker-compose.yml` inside this folder starts PostgreSQL and t
 - Self-dependency rejection.
 - Independent movie relationships allowed.
 
+## Deployment
+
+- Live client: https://doomsday-ready-client.vercel.app
+- Deployed API: https://doomsday-ready-server-inky.vercel.app
+
 ## Relevant Links
 
 - Live client: https://doomsday-ready-client.vercel.app
 - Live API: https://doomsday-ready-server.vercel.app/api
-- Postman collection: https://documenter.getpostman.com/view/59636503/2sBYHbtcid
+- Deployed API: https://doomsday-ready-server-inky.vercel.app
+- Postman collection: https://documenter.getpostman.com/view/59636503/2sBYPv2XTa
 - Client repository: https://github.com/mdashraful24/doomsday-ready-client.git
 - Server repository: https://github.com/mdashraful24/doomsday-ready-server.git
 

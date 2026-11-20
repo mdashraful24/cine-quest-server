@@ -518,9 +518,9 @@ curl -X POST http://localhost:5000/api/cinemas/CINEMA_ID/booking \
 
 Use the published Postman collection to run the full API flow:
 
-https://documenter.getpostman.com/view/59636503/2sBYHbtcid
+https://documenter.getpostman.com/view/59636503/2sBYPv2XTa
 
-A local collection is also available at `postman/CineQuest.postman_collection.json`.
+A local collection is also available at `postman/Doomsday Ready.postman_collection.json`.
 
 ## Verification Commands
 
